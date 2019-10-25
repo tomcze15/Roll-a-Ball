@@ -5,45 +5,33 @@ using UnityEngine.UI;
 
 public class GUIController : MonoBehaviour
 {
-    private GameObject countText;
-    private GameObject winText;
-    private string str_winText;
-    private string str_countText;
-    
-    public string countText_to_show
-    { 
-        set { str_countText = value; }
-        get { return str_countText; } 
-    }
-    public string winText_to_show
+    private Text            countText;
+    private GameObject      winText;   // Jest GameObject'em dlatego, że chcę go w trakcie gry dezaktywować.
+    private ScoreManager    scoreManager;
+    public string statement
     {
-        set { str_winText = value; }
-        get { return str_winText; }
+        set;
+        get;
     }
-
     // Start is called before the first frame update
     void Start()
     {
-        countText   = GameObject.Find("CountText");
-        winText     = GameObject.Find("WinText");
-        
-        countText.GetComponent< Text>().text = "Score: " + ScoreManager.Instance.currentResult + " / " + ScoreManager.Instance.maxPointInLevel;
+        countText       = GameObject.Find("CountText").GetComponent<Text>();
+        winText         = GameObject.Find("WinText");
+        scoreManager    = GetComponent<ScoreManager>();
+
+        countText.text = "Score: " + scoreManager.currentResult + " / " + scoreManager.maxPointInLevel;
         winText.GetComponent<   Text>().text = "";       
         winText.SetActive(false);
     }
 
-    public void setActiveCountText(bool isActive)
+    public void updateUI()
     {
-        countText.SetActive(isActive);
-    }
-
-    public void updateGUI() 
-    {
-        //countText.GetComponent<Text>().text = str_countText;
-        countText.GetComponent<Text>().text = "Score: " + ScoreManager.Instance.currentResult + " / " + ScoreManager.Instance.maxPointInLevel;
-        winText.GetComponent<Text>().text = str_winText;
-
-    }
+        if(!winText.active)
+            countText.text = "Score: " + scoreManager.currentResult + " / " + scoreManager.maxPointInLevel;
+        else
+            winText.GetComponent<Text>().text = statement;
+    } 
 
     public void setActiveWinText(bool isActive)
     {

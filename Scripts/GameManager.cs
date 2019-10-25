@@ -7,76 +7,79 @@ public class GameManager : MonoBehaviour
 {
     private MovementController  player;
     private GUIController       gui;
+    private ScoreManager        scoreManager;
     private Collectible[]       loots;
-    private float               countdown = 3f;
+    private float               countdown = 4F;
     private Vector3[]           respawnPoint = {
-        new Vector3(0F, 0F, 0F),                // For Menu 
         new Vector3(0F, 0.5F, 0F),              // For level one 
         new Vector3(27.5F, 0.5F, -27.5F),       // For level two
         new Vector3(0F, 0.5F, 0F)               // For level three
     };
-    
+
     // Start is called before the first frame update
     void Start()
     {
-        player  = FindObjectOfType<MovementController>();
-        loots   = FindObjectsOfType<Collectible>();
-        gui     = GameObject.Find("Main Camera").GetComponent<GUIController>();
+        player          = FindObjectOfType<MovementController>();
+        loots           = FindObjectsOfType<Collectible>();
+        gui             = GetComponent<GUIController>();
+        scoreManager    = GetComponent<ScoreManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (ScoreManager.Instance.currentResult == ScoreManager.Instance.maxPointInLevel)
+        if (scoreManager.currentResult == scoreManager.maxPointInLevel)
         {
-            if (ScoreManager.Instance.currentLevel == ScoreManager.Instance.currentLevel-1)
-            {               
-                gui.winText_to_show = string.Format("You win! :)\n Exit for {0:0.0}", (countdown -= Time.deltaTime));
-                gui.updateGUI();
+            if (scoreManager.currentLevel == scoreManager.lastLevel) // może tu trzeba dać z prawej strony -1
+            {        
+                gui.statement = string.Format("You win! :)\n Exit for {0:0.0}", (countdown -= Time.deltaTime) - 1F);
+
                 gui.setActiveWinText(true);
-                if (countdown < 0.1f)
-                {        
-                    gui.winText_to_show = "if: You win! :)\n Exit for 0";
-                    gui.updateGUI();
-                    Application.Quit();
-                }
+
+                if (countdown <= 1)      gui.statement = "You win! :)\n Exit for 0";
+                if (countdown < 0.1f)    Application.Quit();
+                
+                gui.updateUI();
             }
             else
             {
-                gui.winText_to_show = string.Format("You win! :)\n Next level for {0:0.0}", (countdown -= Time.deltaTime));
-                gui.setActiveWinText(true);
-                gui.updateGUI();
-                if (countdown < 0.1f)
+                gui.statement = string.Format("You win! :)\n Next level for {0:0.0}", (countdown -= Time.deltaTime)-1F);
+                gui.setActiveWinText(true);              
+                if (countdown <= 1)
+                    gui.statement = "You win! :)\n Next level for 0";
+                if (countdown < 0.1f) 
                 {
-                    gui.winText_to_show = "You win! :)\n Next level for 0";
-                    gui.updateGUI();
-                    SceneManager.LoadSceneAsync(++ScoreManager.Instance.currentLevel);
+                    SceneManager.LoadSceneAsync((++scoreManager.currentLevel) + 1);              
                     respawnPlayer();
                 }
+                gui.updateUI();
             }
         }
         if (player.transform.position.y < -15)
         {
             respawnPlayer();
-            //Dla cwaniaczków co wyskoczą poza mapę, żeby im loot'ów nie zrespiło.
-            if (ScoreManager.Instance.currentResult != ScoreManager.Instance.maxPointInLevel) resetLoots();
+            if (scoreManager.currentResult != scoreManager.maxPointInLevel) resetLoots();
         }
+    }
+
+    public void addScore() 
+    {
+        scoreManager.currentResult++;
+        gui.updateUI();
     }
 
     private void respawnPlayer()
     {
-        player.transform.position = respawnPoint[ScoreManager.Instance.currentLevel];  // tu przef chwilą było -1
+        player.transform.position = respawnPoint[scoreManager.currentLevel];
         player.rb.Sleep();
     }
-
 
     public void resetLoots()
     {
         foreach (Collectible loot in loots)
             if(!loot.gameObject.activeSelf) 
                 loot.gameObject.SetActive(true);
-        ScoreManager.Instance.currentResult = 0;
-        gui.countText_to_show = "Score: " + ScoreManager.Instance.currentResult + " / " + ScoreManager.Instance.maxPointInLevel;
-        gui.updateGUI();
+        scoreManager.currentResult = 0;
+        gui.updateUI();
     }
 }

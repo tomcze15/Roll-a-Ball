@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
-/// The main class that manages score in the game
+/// The main class that manages currentResult in the game
 /// </summary>
-class ScoreManager
+class ScoreManager : MonoBehaviour
 {
-    private static ScoreManager manager = new ScoreManager();
-    private int                 current_result;
-    private readonly int[]      MaxPointsInLvl  = {0, 4, 6, 1 }; //Ponieważ pierwszy level to Menu xD
-    private int                 current_lvl     = 1;
-    
-    private ScoreManager() { }
-   
-    public static ScoreManager Instance { get { return manager; } }
+    private static int current_result;
+    private static readonly int[] MaxPointsInLvl = { 4, 6, 1 };
+    private static int current_lvl;
+
+    void Start()
+    {
+        //current_result = 0;
+        //current_lvl = 0;
+    }
+
     public int currentResult
     {
         set
@@ -30,11 +34,27 @@ class ScoreManager
     {
         set
         {
-            current_lvl = value;
-            current_result = 0;
+            if (MaxPointsInLvl.Length >= value)
+            {
+                current_lvl = value;
+                current_result = 0;
+            }
+            else
+                Debug.Log("Nie ma takiego Level'u. Prawdopodobnie za duża wartość.");
         }
         get { return current_lvl; }
     }
-    public int maxPointInLevel { get { return MaxPointsInLvl[current_lvl]; } }
+
+    public int maxPointInLevel
+    {
+        get
+        {
+            if (current_lvl < 0)
+                return -1;  
+            return MaxPointsInLvl[current_lvl];
+        }
+    }
+
+    public int lastLevel{ get { return MaxPointsInLvl.Length-1; } }
 }
 

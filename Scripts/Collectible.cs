@@ -4,23 +4,20 @@ using UnityEngine;
 
 public class Collectible : MonoBehaviour
 {
-    public  MovementController   player;
-    public  int                  speed          = 10;
-    private GUIController gui;
+    public  int         speed          = 10;
+    private GameManager gameManager;
+
     // Start is called before the first frame update
     void Start()
     {
-        player = FindObjectOfType<MovementController>();
-        gui = GameObject.Find("Main Camera").GetComponent<GUIController>();
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     void OnTriggerEnter(Collider collision)
     {
-       
         gameObject.SetActive(false);
-        ScoreManager.Instance.currentResult++;
-        gui.countText_to_show = "Score: " + ScoreManager.Instance.currentResult + " / " + ScoreManager.Instance.maxPointInLevel;
-        gui.updateGUI();
+        gameManager.addScore();
+       
     }
 
     // Update is called once per frame
