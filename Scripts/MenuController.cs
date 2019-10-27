@@ -5,19 +5,37 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
-    GameObject optionsPanel;
-    public void StartGame() 
+    private float delay = 0.6f; 
+    public void StartGame()
     {
-        SceneManager.LoadSceneAsync("level_1");
+        StartCoroutine(StartGameDelay());       
     }
 
     public void ExitGame()
     {
-        Application.Quit();
+        StartCoroutine(ExitGameDelay());
     }
 
     public void ShowOptions(bool isActive)
     {
+        StartCoroutine(SettingsGameDelay()); 
+    }
+
+    IEnumerator StartGameDelay()
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadSceneAsync("level_1");
+    }
+
+    IEnumerator ExitGameDelay()
+    {
+        yield return new WaitForSeconds(delay);
+        Application.Quit();
+    }
+
+    IEnumerator SettingsGameDelay()
+    {
+        yield return new WaitForSeconds(delay);
         //optionsPanel.SetActive(isActive);
     }
 }
