@@ -5,6 +5,13 @@ using UnityEngine;
 public class Collectible : MonoBehaviour
 {
     public  int         speed          = 10;
+
+    //public event Action pickupEvent;
+
+    private void Start()
+    {
+        
+    }
     void OnTriggerEnter(Collider collision)
     {
         gameObject.SetActive(false);

@@ -7,18 +7,18 @@ public class GameManager : MonoBehaviour
 {
     private MovementController  player;
     private GUIManager          gui;
-    private ScoreController     scoreManager;
+    //private ScoreController     scoreManager;
     private Collectible[]       loots;
     private float               countdown;
     private int                 score;
     private int                 currentLevel;
-   
+    
     public  AudioClip           lose;
     public  AudioClip           win;
     private AudioSource         audioSource;
     private bool                isLosedSound;
     private bool                isWinSound;
-    
+    private bool isFirstLoadText;
     private Vector3[]           respawnPoint = {
         new Vector3(0F, 0.5F, 0F),              // For level one 
         new Vector3(27.5F, 0.5F, -27.5F),       // For level two
@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        isWinSound = isLosedSound = true;
+        isFirstLoadText = isWinSound = isLosedSound = true;
         audioSource = GetComponent<AudioSource>();
         audioSource.Play();
         score = 0;
@@ -37,13 +37,20 @@ public class GameManager : MonoBehaviour
         player          = FindObjectOfType<     MovementController  >();
         loots           = FindObjectsOfType<    Collectible         >();
         gui             = GameObject.FindGameObjectWithTag("UIScore").GetComponent<GUIManager>();
-        scoreManager    = GetComponent<ScoreController>();
+        //scoreManager    = GetComponent<ScoreController>();
+        QualitySettings.vSyncCount = 1;
         //updateUIScore(); 
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isFirstLoadText)
+        {
+            isFirstLoadText = false;
+            updateUIScore();
+        }
+
         if (score == loots.Length)
         {
             if (currentLevel == 3)
@@ -53,47 +60,36 @@ public class GameManager : MonoBehaviour
                     audioSource.PlayOneShot(win);
                     isWinSound = false;
                 }
-                gui.statement = string.Format("You win! :)\n Exit to Menu for {0:0.0}", (countdown -= Time.deltaTime) - 1F);
-                gui.setActiveWinText(true);
 
-                if (countdown <= 1)      gui.statement = "You win! :)\n Exit to Menu for 0";
-                if (countdown < 0.1f) SceneManager.LoadSceneAsync("MenuMain");
+                displayStatement(string.Format("You win! :)\n Exit to Menu for {0:0.0}", (countdown -= Time.deltaTime) - 1F));
+
+                if (countdown <= 1)     gui.statement = "You win! :)\n Exit to Menu for 0,0";
+                if (countdown < 0.1f)   SceneManager.LoadSceneAsync("MenuMain");
 
                 gui.updateUI();
             }
             else
             {
-                gui.statement = string.Format("You win! :)\n Next level for {0:0.0}", (countdown -= Time.deltaTime)-1F);
-                gui.setActiveWinText(true);              
+                displayStatement(string.Format("You win! :)\n Next level for {0:0.0}", (countdown -= Time.deltaTime)-1F));           
                 
-                if (countdown <= 1) gui.statement = "You win! :)\n Next level for 0";
+                if (countdown <= 1) gui.statement = "You win! :)\n Next level for 0,0";
                 
                 if (countdown < 0.1f) 
                 {
                     SceneManager.LoadSceneAsync((currentLevel + 1));              
                     respawnPlayer();
                 }
-
                 gui.updateUI();
             }
         }
+
         if (player.transform.position.y < -5 && isLosedSound)
         {
             audioSource.PlayOneShot(lose);
             isLosedSound = false;
         }
 
-        if (player.transform.position.y < -15)
-        {           
-            respawnPlayer();
-            if (score < loots.Length) 
-            {
-                resetLoots();
-                score = 0;
-                updateUIScore();
-            }
-            isLosedSound = true;
-        }
+        respawnLevel();
     }
 
     public void addScore() 
@@ -106,7 +102,7 @@ public class GameManager : MonoBehaviour
     private void respawnPlayer()
     {
         player.transform.position = respawnPoint[currentLevel-1];
-        player.rb.Sleep();
+        player.sleep();
     }
 
     private void updateUIScore()
@@ -120,5 +116,26 @@ public class GameManager : MonoBehaviour
         foreach (Collectible loot in loots)
             if (!loot.gameObject.activeSelf)
                 loot.gameObject.SetActive(true);
+    }
+
+    void displayStatement(string statement)
+    {
+        gui.statement = statement;
+        gui.setActiveWinText(true);
+    }
+
+    void respawnLevel()
+    {
+        if (player.transform.position.y < -15)
+        {
+            respawnPlayer();
+            if (score < loots.Length)
+            {
+                resetLoots();
+                score = 0;
+                updateUIScore();
+            }
+            isLosedSound = true;
+        }
     }
 }

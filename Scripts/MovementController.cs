@@ -7,8 +7,8 @@ public class MovementController : MonoBehaviour
     public  float        thrust = 5;
     public  AudioClip    jump;
     private AudioSource  audioSource;
-    public  Rigidbody    rb;
-    
+    private Rigidbody    rb;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,6 +19,7 @@ public class MovementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (Input.GetKey(KeyCode.W)) rb.AddForce(0, 0, thrust, ForceMode.Force);
         if (Input.GetKey(KeyCode.S)) rb.AddForce(0, 0, -thrust, ForceMode.Force);
         if (Input.GetKey(KeyCode.D)) rb.AddForce(thrust, 0, 0, ForceMode.Force);
@@ -29,5 +30,10 @@ public class MovementController : MonoBehaviour
             rb.AddForce(0, thrust * 50, 0, ForceMode.Force);
             audioSource.PlayOneShot(jump);
         }
+    }
+
+    public void sleep()
+    {
+        rb.Sleep();
     }
 }

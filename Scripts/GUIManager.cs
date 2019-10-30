@@ -5,9 +5,11 @@ using UnityEngine.UI;
 
 public class GUIManager : MonoBehaviour
 {
-    private Text            countText;
-    private GameObject      winText;
-    private ScoreController scoreManager;
+    //private MovementController  player;
+    private Text                countText;
+    private GameObject          winText;
+    //private ScoreController     scoreManager;
+    private GameObject          panelScore;
     public string scoreText { set; get; }
     public string statement { set; get; }
 
@@ -16,16 +18,19 @@ public class GUIManager : MonoBehaviour
     {
         countText       = GameObject.Find("CountText").GetComponent<Text>();
         winText         = GameObject.Find("WinText");
-        scoreManager    = GetComponent<ScoreController>();
+        panelScore      = GameObject.Find("bg_Win");
+        //scoreManager    = GetComponent<     ScoreController     >();
+        //player          = FindObjectOfType< MovementController  >();
 
         countText.text                          = "";
-        winText.GetComponent<   Text>().text    = "";       
+        winText.GetComponent<   Text>().text    = "";
+        panelScore.gameObject.SetActive(false);
         winText.SetActive(false);
     }
 
     public void updateUI()
     {
-        if (!winText.active) 
+        if (!winText.activeSelf) 
             countText.text = scoreText;
         else 
             winText.GetComponent<Text>().text = statement;
@@ -33,7 +38,7 @@ public class GUIManager : MonoBehaviour
 
     public void updateUI(string scoreText, string statement)
     {
-        if (!winText.active)
+        if (!winText.activeSelf)
             countText.text = this.scoreText = scoreText;
         else
             winText.GetComponent<Text>().text = this.statement = statement;
@@ -41,6 +46,7 @@ public class GUIManager : MonoBehaviour
 
     public void setActiveWinText(bool isActive)
     {
+        panelScore.gameObject.SetActive(isActive);
         winText.SetActive(isActive);
     }
 }
