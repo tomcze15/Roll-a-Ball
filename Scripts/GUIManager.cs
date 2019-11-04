@@ -1,47 +1,71 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GUIManager : MonoBehaviour
 {
-    //private MovementController  player;
+    private Player              player;
     private Text                countText;
     private GameObject          winText;
-    //private ScoreController     scoreManager;
     private GameObject          panelScore;
+    private int                 numberOfLoots;
+    private bool                showStatement;
+    private int                 currentLevel;
+    private float               countdown;
     public string scoreText { set; get; }
     public string statement { set; get; }
 
     // Start is called before the first frame update
     void Start()
     {
-        countText       = GameObject.Find("CountText").GetComponent<Text>();
-        winText         = GameObject.Find("WinText");
-        panelScore      = GameObject.Find("bg_Win");
-        //scoreManager    = GetComponent<     ScoreController     >();
-        //player          = FindObjectOfType< MovementController  >();
-
+        countText       = GameObject.Find("CountText"   ).GetComponent<Text>();
+        winText         = GameObject.Find("WinText"     );
+        panelScore      = GameObject.Find("bg_Win"      );
+        player          = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        numberOfLoots   = FindObjectsOfType<Collectible>().Length;
+        currentLevel    = SceneManager.GetActiveScene().buildIndex;
         countText.text                          = "";
-        winText.GetComponent<   Text>().text    = "";
+        winText.GetComponent<Text>().text       = "";
+        countdown                               = 4f;
         panelScore.gameObject.SetActive(false);
         winText.SetActive(false);
+        player.pickupEvent += updateUI;
+        updateUI();
+    }
+
+    private void Update()
+    {
+        if (player.GetComponent<MovementController>().transform.position.y < -15)
+            countText.text = "Score: 0 / " + numberOfLoots;
+
+        if (showStatement)
+        {
+            countdown -= Time.deltaTime;
+            if (currentLevel != 3)
+            {
+                if (countdown <= 1)
+                    statement = "You win! :)\n Next level for 0,0";
+                else
+                    statement = string.Format("You win! :)\n Next level for {0:0.0}", countdown - 1f);
+            }
+            else 
+            {
+                if (countdown <= 1)
+                    statement = "You win! :)\n Exit to Menu for 0,0";
+                else
+                    statement = string.Format("You win! :)\n Exit to Menu for {0:0.0}", countdown - 1f);
+            }
+            winText.GetComponent<Text>().text = statement;
+        }
     }
 
     public void updateUI()
     {
-        if (!winText.activeSelf) 
-            countText.text = scoreText;
-        else 
-            winText.GetComponent<Text>().text = statement;
-    }
+        countText.text = "Score: " + player.getScore() + " / " + numberOfLoots;
 
-    public void updateUI(string scoreText, string statement)
-    {
-        if (!winText.activeSelf)
-            countText.text = this.scoreText = scoreText;
-        else
-            winText.GetComponent<Text>().text = this.statement = statement;
+        if (player.score == numberOfLoots){ showStatement = true; setActiveWinText(true); }
     }
 
     public void setActiveWinText(bool isActive)

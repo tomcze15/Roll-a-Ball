@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -4670979231814573819}
   m_Layer: 0
   m_Name: EyeBall
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -193,7 +193,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   thrust: 5
-  jump: {fileID: 8300000, guid: a5bef7590b452ef44930c0155bc47ce7, type: 3}
 --- !u!114 &-4670979231814573819
 MonoBehaviour:
   m_ObjectHideFlags: 0

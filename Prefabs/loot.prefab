@@ -13,10 +13,9 @@ GameObject:
   - component: {fileID: 4701409287634346893}
   - component: {fileID: 4701409287634346892}
   - component: {fileID: 4701409287634346880}
-  - component: {fileID: -7225633870417165521}
   m_Layer: 0
-  m_Name: loot
-  m_TagString: Untagged
+  m_Name: Loot
+  m_TagString: BasicLoot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -107,15 +106,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
---- !u!114 &-7225633870417165521
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4701409287634346891}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc80c8b80129211469802a91510598b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

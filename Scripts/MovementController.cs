@@ -5,15 +5,12 @@ using UnityEngine;
 public class MovementController : MonoBehaviour
 {
     public  float        thrust = 5;
-    public  AudioClip    jump;
-    private AudioSource  audioSource;
     private Rigidbody    rb;
 
     // Start is called before the first frame update
     void Start()
     {
-        audioSource = GetComponent< AudioSource  >();
-        rb          = GetComponent< Rigidbody    >();
+        rb = GetComponent< Rigidbody >();
     }
 
     // Update is called once per frame
@@ -26,14 +23,11 @@ public class MovementController : MonoBehaviour
         if (Input.GetKey(KeyCode.A)) rb.AddForce(-thrust, 0, 0, ForceMode.Force);
 
         if (Input.GetKeyDown("space") && 0.49 < transform.position.y && transform.position.y < 0.515)
-        {
             rb.AddForce(0, thrust * 50, 0, ForceMode.Force);
-            audioSource.PlayOneShot(jump);
-        }
     }
 
     public void sleep()
-    {
+    { 
         rb.Sleep();
     }
 }

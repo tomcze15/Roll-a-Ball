@@ -5,16 +5,23 @@ public class LootFX : MonoBehaviour
 {
 
     [Range(0.1f, 1.0f)]
-    public  float           volume;
-    private AudioSource     audioSource;
-    private Collectible[]   loots;
-    public  AudioClip       oneUp;
+    public  float           volume;         // Głośność dźwięku
+    private AudioSource     audioSource;    // Obsługuję dźwięk
+    private Collectible[]   loots;          // Wszystkie loot'y na obecsnej scenie
+    public  AudioClip       oneUp;          // Dźwięk zebrania loot'a
+
+    private Player player;
+
     private void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         audioSource = GetComponent<      AudioSource >();
         loots       = FindObjectsOfType< Collectible >();
+
+        player.pickupEvent += collectSound;
     }
 
+    // Funkcja uruchamia dźwięk zebrania loot'a
     public void collectSound()
     {
         audioSource.PlayOneShot(oneUp);
