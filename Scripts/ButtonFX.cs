@@ -8,7 +8,7 @@ public class ButtonFX : MonoBehaviour
     public  AudioClip   hoverFx;
     public  AudioClip   clickFx;
 
-    private void Start()
+    private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
     }

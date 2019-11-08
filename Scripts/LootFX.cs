@@ -12,12 +12,15 @@ public class LootFX : MonoBehaviour
 
     private Player player;
 
-    private void Start()
+    private void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         audioSource = GetComponent<      AudioSource >();
         loots       = FindObjectsOfType< Collectible >();
+    }
 
+    private void Start()
+    {
         player.pickupEvent += collectSound;
     }
 

@@ -17,8 +17,7 @@ public class GUIManager : MonoBehaviour
     public string scoreText { set; get; }
     public string statement { set; get; }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         countText       = GameObject.Find("CountText"   ).GetComponent<Text>();
         winText         = GameObject.Find("WinText"     );
@@ -31,8 +30,13 @@ public class GUIManager : MonoBehaviour
         countdown                               = 4f;
         panelScore.gameObject.SetActive(false);
         winText.SetActive(false);
-        player.pickupEvent += updateUI;
         updateUI();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        player.pickupEvent += updateUI;
     }
 
     private void Update()

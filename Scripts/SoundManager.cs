@@ -17,7 +17,7 @@ public class SoundManager : MonoBehaviour
     private int             numberOfLoots;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         alreadyPlayedWinSound   =   false;
         loseSound               =   true;
@@ -32,8 +32,10 @@ public class SoundManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown("space") && 0.49 < player_position.position.y && player_position.position.y < 0.515)
-            audioSource.PlayOneShot(jump_player);
+        //if (Input.GetKeyDown("space") && 0.49 < player_position.position.y && player_position.position.y < 0.515)
+        if (player.GetComponent<MovementController>().isGrounded)
+            if (Input.GetButtonDown("Jump"))
+                audioSource.PlayOneShot(jump_player);
         respawnSoundPlayer();
     }
 

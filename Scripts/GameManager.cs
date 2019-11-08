@@ -26,8 +26,7 @@ public class GameManager : MonoBehaviour
         new Vector3(0F, 0.5F, 0F)               // For level three
     };
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {      
         loadLvl         = false;
         countdown       = 4f;
@@ -35,8 +34,13 @@ public class GameManager : MonoBehaviour
         player          = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         player_mc       = player.GetComponent<  MovementController  >();
         loots           = FindObjectsOfType<    Collectible         >();
-        player.pickupEvent += isLoadLvl;
         QualitySettings.vSyncCount = 1;
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        player.pickupEvent += isLoadLvl;
     }
 
     // Update is called once per frame

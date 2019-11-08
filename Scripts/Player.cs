@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
     }
     public event Action pickupEvent;
 
-    private void Start()
+    private void Awake()
     {
         currentScore = 0;
     }
