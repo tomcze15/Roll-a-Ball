@@ -5,55 +5,57 @@ using UnityEngine.SceneManagement;
 
 public class SoundManager : MonoBehaviour
 {
-    private AudioSource     audioSource;
-    public  AudioClip       win;
-    public  AudioClip       lose;
-    public  AudioClip       jump_player;
-    private bool            alreadyPlayedWinSound;
-    private bool            loseSound;
-    private int             currentLevel;
-    private Player          player;
-    private Transform       player_position;
-    private int             numberOfLoots;
+    private AudioSource             audioSource;
+    
+    [SerializeField]
+    private AudioClip               win;
+    
+    [SerializeField]
+    private AudioClip               lose;
+    
+    [SerializeField]
+    private AudioClip               jump_player;
+
+    private bool                    alreadyPlayedWinSound;
+    private int                     currentLevel;
+    private Player                  player;
+    private MovementController      player_mv;
+    private RestartLevelByContact   rl;
+    private int                     numberOfLoots;
 
     // Start is called before the first frame update
-    void Awake()
+    private void Awake()
     {
         alreadyPlayedWinSound   =   false;
-        loseSound               =   true;
         currentLevel            =   SceneManager.GetActiveScene().buildIndex;
         audioSource             =   GetComponent<AudioSource>();
         numberOfLoots           =   FindObjectsOfType<Collectible>().Length;
         player                  =   GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        player_position         =   player.GetComponent<Transform>();
-        player.pickupEvent      +=  playWinGameSound;
+        player_mv               =   player.GetComponent<MovementController>();
+        rl                      =   GameObject.FindObjectOfType<RestartLevelByContact>();
+        player.pickupEvent      +=  PlayWinGameSound; // To chyba powinno być w updatejcie :O
         audioSource.Play();
     }
 
-    private void Update()
+    private void Start()
     {
-        //if (Input.GetKeyDown("space") && 0.49 < player_position.position.y && player_position.position.y < 0.515)
-        if (player.GetComponent<MovementController>().isGrounded)
-            if (Input.GetButtonDown("Jump"))
-                audioSource.PlayOneShot(jump_player);
-        respawnSoundPlayer();
+        player_mv.jumped    += SoundJump;
+        rl.resetLevel       += RespawnSoundPlayer;
     }
 
-    void respawnSoundPlayer()
+    private void RespawnSoundPlayer()
     {
-        if (player_position.position.y < -5 && loseSound)
-        {
-            audioSource.PlayOneShot(lose);
-            loseSound = false;
-        }
-
-        if (player_position.position.y < -15)
-            loseSound = true;
+        audioSource.PlayOneShot(lose);
     }
 
-    void playWinGameSound()
+    private void SoundJump()
     {
-        if (currentLevel == 3)
+        audioSource.PlayOneShot(jump_player);
+    }
+
+    private void PlayWinGameSound()
+    {
+        if (currentLevel == 4)
         {
             if (!alreadyPlayedWinSound && (player.score == numberOfLoots))
             {

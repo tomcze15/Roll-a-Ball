@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
         set { currentScore = value; }
         get { return currentScore; }
     }
+
     public event Action pickupEvent;
 
     private void Awake()
@@ -20,15 +21,15 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter(Collider collision)
     {
-        if (collision.gameObject.tag == "BasicLoot") { addScore(1); pickupEvent?.Invoke(); };
+        if (collision.gameObject.tag == "BasicLoot") { AddScore(1); pickupEvent?.Invoke(); };
     }
 
-    private void addScore(int score)
+    private void AddScore(int score)
     {
         this.currentScore += score;
     }
 
-    public int getScore()
+    public int GetScore()
     {
         return currentScore;
     }

@@ -14,48 +14,75 @@ enum Scenes : byte
 
 public class GameManager : MonoBehaviour
 {
-    private Player              player;
-    private MovementController  player_mc;
-    private Collectible[]       loots;
-    private float               countdown;
-    private int                 currentLevel;
-    private bool                loadLvl;
+    private Player                  player;
+    private MovementController      player_mc;
+    private Collectible[]           loots;
+    private float                   countdown;
+    private int                     currentLevel;
+    private bool                    loadLvl;
+    private bool                    alreadySetKeys = false;
+    private RestartLevelByContact   rs;
+    private GUIManager              gui;
     private Vector3[]           respawnPoint = {
         new Vector3(0F, 0.5F, 0F),              // For level one 
         new Vector3(27.5F, 0.5F, -27.5F),       // For level two
-        new Vector3(0F, 0.5F, 0F)               // For level three
+        new Vector3(0F, 0.5F, 0F),              // For level three
+        new Vector3(0F, 2F, 2F)               // For level four
     };
 
-    void Awake()
+    private void Awake()
     {      
         loadLvl         = false;
         countdown       = 4f;
         currentLevel    = SceneManager.GetActiveScene().buildIndex;
         player          = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        player_mc       = player.GetComponent<  MovementController  >();
-        loots           = FindObjectsOfType<    Collectible         >();
+        player_mc       = player.GetComponent<          MovementController      >();
+        rs              = GameObject.FindObjectOfType<  RestartLevelByContact   >();
+        gui             = GameObject.FindObjectOfType<GUIManager>();
+        loots           = FindObjectsOfType<Collectible>();
         QualitySettings.vSyncCount = 1;
     }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        player.pickupEvent += isLoadLvl;
+        player.pickupEvent  += IsLoadLvl;
+        rs.resetLevel       += ResetLevel;
+
+        if (currentLevel == 4 && !alreadySetKeys)
+        {
+            player_mc.setKey(new Vector3(-player_mc.getThrust(), 0, 0), KeyCode.W);
+            player_mc.setKey(new Vector3(player_mc.getThrust(), 0, 0), KeyCode.S);
+            player_mc.setKey(new Vector3(0, 0, -player_mc.getThrust()), KeyCode.A);
+            player_mc.setKey(new Vector3(0, 0, player_mc.getThrust()), KeyCode.D);
+            alreadySetKeys = true;
+        }
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (loadLvl)
+        if(loadLvl) LoadLevel();
+    }
+
+    private void IsLoadLvl()
+    {
+        if (player.score == loots.Length)
+            loadLvl = true;
+    }
+
+    private void LoadLevel()
+    {
+        if (player.score == loots.Length)
         {
-            if (currentLevel != 3)
+            if (currentLevel != lastLevel())
             {
                 countdown -= Time.deltaTime;
                 if (countdown < 0.1f)
                 {
                     SceneManager.LoadSceneAsync((currentLevel + 1));
                     player.score = 0;
-                    respawnPlayer();
+                    RespawnPlayer();
                 }
             }
             else
@@ -65,38 +92,39 @@ public class GameManager : MonoBehaviour
                     SceneManager.LoadSceneAsync(0);
             }
         }
-        respawnLevel();
     }
 
-    private void respawnPlayer()
+    private void RespawnPlayer()
     {
         player_mc.transform.position = respawnPoint[currentLevel-1];
-        player_mc.sleep();
+        player_mc.Sleep();
     }
-
-    public void resetLoots()
+    public void ResetLoots()
     {
         foreach (Collectible loot in loots)
             if (!loot.gameObject.activeSelf)
                 loot.gameObject.SetActive(true);
     }
 
-    void respawnLevel()
+    private void ResetLevel()
     {
-        if (player_mc.transform.position.y < -15)
+        StartCoroutine("RestartLevelCoroutine");
+    }
+
+    private IEnumerator RestartLevelCoroutine()
+    {
+        yield return new WaitForSeconds(1.0f);
+        RespawnPlayer();
+        if (player.score < loots.Length)
         {
-            respawnPlayer();
-            if (player.score < loots.Length)
-            {
-                resetLoots();
-                player.score = 0;
-            }
+            ResetLoots();
+            player.score = 0;
+            gui.updateUI();
         }
     }
 
-    void isLoadLvl()
+    public int lastLevel()
     {
-        if (player.score == loots.Length)
-            loadLvl = true;
+        return 4;
     }
 }

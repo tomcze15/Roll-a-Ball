@@ -5,20 +5,24 @@ using UnityEngine;
 public class ButtonFX : MonoBehaviour
 {
     private AudioSource audioSource;
-    public  AudioClip   hoverFx;
-    public  AudioClip   clickFx;
+    
+    [SerializeField]
+    private AudioClip   hoverFx;
+    
+    [SerializeField]
+    private AudioClip   clickFx;
 
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
     }
 
-    public void hoverSound()
+    public void HoverSound()
     {
         audioSource.PlayOneShot(hoverFx);
     }
 
-    public void clickSound()
+    public void ClickSound()
     {
         audioSource.PlayOneShot(clickFx);
     }

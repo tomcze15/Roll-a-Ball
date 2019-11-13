@@ -11,17 +11,19 @@ public class GUIManager : MonoBehaviour
     private GameObject          winText;
     private GameObject          panelScore;
     private int                 numberOfLoots;
-    private bool                showStatement;
+    private bool                displayStatement;
     private int                 currentLevel;
     private float               countdown;
     public string scoreText { set; get; }
     public string statement { set; get; }
 
-    void Awake()
+    //private RestartLevelByContact rs;
+
+    private void Awake()
     {
-        countText       = GameObject.Find("CountText"   ).GetComponent<Text>();
-        winText         = GameObject.Find("WinText"     );
-        panelScore      = GameObject.Find("bg_Win"      );
+        countText       = GameObject.Find(  "CountText" ).GetComponent<Text>();
+        winText         = GameObject.Find(  "WinText"   );
+        panelScore      = GameObject.Find(  "bg_Win"    );
         player          = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         numberOfLoots   = FindObjectsOfType<Collectible>().Length;
         currentLevel    = SceneManager.GetActiveScene().buildIndex;
@@ -34,42 +36,46 @@ public class GUIManager : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        player.pickupEvent += updateUI;
+        player.pickupEvent  += updateUI;
     }
 
     private void Update()
     {
-        if (player.GetComponent<MovementController>().transform.position.y < -15)
-            countText.text = "Score: 0 / " + numberOfLoots;
-
-        if (showStatement)
-        {
-            countdown -= Time.deltaTime;
-            if (currentLevel != 3)
-            {
-                if (countdown <= 1)
-                    statement = "You win! :)\n Next level for 0,0";
-                else
-                    statement = string.Format("You win! :)\n Next level for {0:0.0}", countdown - 1f);
-            }
-            else 
-            {
-                if (countdown <= 1)
-                    statement = "You win! :)\n Exit to Menu for 0,0";
-                else
-                    statement = string.Format("You win! :)\n Exit to Menu for {0:0.0}", countdown - 1f);
-            }
-            winText.GetComponent<Text>().text = statement;
-        }
+        if (displayStatement) DisplayStatement();
     }
 
     public void updateUI()
     {
-        countText.text = "Score: " + player.getScore() + " / " + numberOfLoots;
+        countText.text = "Score: " + player.GetScore() + " / " + numberOfLoots;
 
-        if (player.score == numberOfLoots){ showStatement = true; setActiveWinText(true); }
+        if (player.score == numberOfLoots){ displayStatement = true; }
+    }
+
+    private void DisplayStatement()
+    {
+        setActiveWinText(true);
+        countdown -= Time.deltaTime;
+        if (currentLevel != 4)
+        {
+            if (countdown <= 1)
+                SetStatement("You win! :)\n Next level for 0,0");
+            else
+                SetStatement(string.Format("You win! :)\n Next level for {0:0.0}", countdown - 1f));
+        }
+        else
+        {
+            if (countdown <= 1)
+                SetStatement("You win! :)\n Exit to Menu for 0,0");
+            else
+                SetStatement(string.Format("You win! :)\n Exit to Menu for {0:0.0}", countdown - 1f));
+        }
+    }
+
+    private void SetStatement(string text)
+    {
+        winText.GetComponent<Text>().text = text;
     }
 
     public void setActiveWinText(bool isActive)
