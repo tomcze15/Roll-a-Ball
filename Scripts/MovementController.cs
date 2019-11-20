@@ -3,19 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//enum Key : byte
-//{
-//    W,
-//    S,
-//    D,
-//    A,
-//    JUMP
-//}
-
 public class MovementController : MonoBehaviour
 {
-    private float       thrust = 5;
-    public  float       speed = 5;
+    private float       thrust  = 5;
+    public  float       speed   = 5;
     public  bool        isGrounded;
     private Rigidbody   rb;
 
@@ -56,12 +47,6 @@ public class MovementController : MonoBehaviour
         return thrust;
     }
 
-    private void OnCollisionEnter(Collision other)
-    {
-        if (other.gameObject.tag == "Ground" || other.gameObject.tag == "Wall")
-            isGrounded = true;
-    }
-
     private void OnCollisionExit(Collision other)
     {
         if (other.gameObject.tag == "Ground" || other.gameObject.tag == "Wall")
@@ -73,8 +58,6 @@ public class MovementController : MonoBehaviour
         if (collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Wall")
             isGrounded = true;
     }
-
-
 
     public void Sleep()
     {

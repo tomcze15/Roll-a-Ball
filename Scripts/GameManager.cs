@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-enum Scenes : byte
-{
-    MainMenu,
-    Level_1,
-    Level_2,
-    Level_3,
-}
+//enum Scenes : byte
+//{
+//    MainMenu,
+//    Level_1,
+//    Level_2,
+//    Level_3,
+//}
 
 public class GameManager : MonoBehaviour
 {
@@ -23,11 +21,11 @@ public class GameManager : MonoBehaviour
     private bool                    alreadySetKeys = false;
     private RestartLevelByContact   rs;
     private GUIManager              gui;
-    private Vector3[]           respawnPoint = {
-        new Vector3(0F, 0.5F, 0F),              // For level one 
-        new Vector3(27.5F, 0.5F, -27.5F),       // For level two
-        new Vector3(0F, 0.5F, 0F),              // For level three
-        new Vector3(0F, 2F, 2F)               // For level four
+    private Vector3[]               respawnPoint = {
+        new Vector3(0F,     0.5F,   0F),           // For level one 
+        new Vector3(27.5F,  0.5F,   -27.5F),       // For level two
+        new Vector3(0F,     0.5F,   0F),           // For level three
+        new Vector3(0F,     2F,     2F)            // For level four
     };
 
     private void Awake()
@@ -38,9 +36,9 @@ public class GameManager : MonoBehaviour
         player          = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         player_mc       = player.GetComponent<          MovementController      >();
         rs              = GameObject.FindObjectOfType<  RestartLevelByContact   >();
-        gui             = GameObject.FindObjectOfType<GUIManager>();
+        gui             = GameObject.FindObjectOfType<  GUIManager              >();
         loots           = FindObjectsOfType<Collectible>();
-        QualitySettings.vSyncCount = 1;
+        QualitySettings.vSyncCount = 1;      
     }
 
     // Start is called before the first frame update
@@ -48,6 +46,8 @@ public class GameManager : MonoBehaviour
     {
         player.pickupEvent  += IsLoadLvl;
         rs.resetLevel       += ResetLevel;
+
+        if (currentLevel == 1) MusicLoop.Instance.Play();
 
         if (currentLevel == 4 && !alreadySetKeys)
         {
@@ -62,7 +62,8 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if(loadLvl) LoadLevel();
+        if (Input.GetKey(KeyCode.Escape))   Application.Quit();
+        if (loadLvl)                        LoadLevel();
     }
 
     private void IsLoadLvl()
@@ -75,7 +76,7 @@ public class GameManager : MonoBehaviour
     {
         if (player.score == loots.Length)
         {
-            if (currentLevel != lastLevel())
+            if (currentLevel != LastLevel())
             {
                 countdown -= Time.deltaTime;
                 if (countdown < 0.1f)
@@ -89,7 +90,10 @@ public class GameManager : MonoBehaviour
             {
                 countdown -= Time.deltaTime;
                 if (countdown < 0.1f)
+                {
+                    MusicLoop.Instance.Stop();
                     SceneManager.LoadSceneAsync(0);
+                }
             }
         }
     }
@@ -99,6 +103,7 @@ public class GameManager : MonoBehaviour
         player_mc.transform.position = respawnPoint[currentLevel-1];
         player_mc.Sleep();
     }
+
     public void ResetLoots()
     {
         foreach (Collectible loot in loots)
@@ -119,11 +124,11 @@ public class GameManager : MonoBehaviour
         {
             ResetLoots();
             player.score = 0;
-            gui.updateUI();
+            gui.UpdateUI();
         }
     }
 
-    public int lastLevel()
+    public int LastLevel()
     {
         return 4;
     }

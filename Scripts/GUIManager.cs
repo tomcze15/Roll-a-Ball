@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -17,8 +15,6 @@ public class GUIManager : MonoBehaviour
     public string scoreText { set; get; }
     public string statement { set; get; }
 
-    //private RestartLevelByContact rs;
-
     private void Awake()
     {
         countText       = GameObject.Find(  "CountText" ).GetComponent<Text>();
@@ -32,13 +28,13 @@ public class GUIManager : MonoBehaviour
         countdown                               = 4f;
         panelScore.gameObject.SetActive(false);
         winText.SetActive(false);
-        updateUI();
+        UpdateUI();
     }
 
     // Start is called before the first frame update
     private void Start()
     {
-        player.pickupEvent  += updateUI;
+        player.pickupEvent  += UpdateUI;
     }
 
     private void Update()
@@ -46,7 +42,7 @@ public class GUIManager : MonoBehaviour
         if (displayStatement) DisplayStatement();
     }
 
-    public void updateUI()
+    public void UpdateUI()
     {
         countText.text = "Score: " + player.GetScore() + " / " + numberOfLoots;
 
@@ -55,7 +51,7 @@ public class GUIManager : MonoBehaviour
 
     private void DisplayStatement()
     {
-        setActiveWinText(true);
+        SetActiveWinText(true);
         countdown -= Time.deltaTime;
         if (currentLevel != 4)
         {
@@ -78,7 +74,7 @@ public class GUIManager : MonoBehaviour
         winText.GetComponent<Text>().text = text;
     }
 
-    public void setActiveWinText(bool isActive)
+    public void SetActiveWinText(bool isActive)
     {
         panelScore.gameObject.SetActive(isActive);
         winText.SetActive(isActive);

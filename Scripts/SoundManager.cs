@@ -5,16 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class SoundManager : MonoBehaviour
 {
-    private AudioSource             audioSource;
-    
+    private AudioSource audioSource;
+
     [SerializeField]
-    private AudioClip               win;
-    
+    private AudioClip win;
+
     [SerializeField]
-    private AudioClip               lose;
-    
+    private AudioClip lose;
+
     [SerializeField]
-    private AudioClip               jump_player;
+    private AudioClip jump_player;
 
     private bool                    alreadyPlayedWinSound;
     private int                     currentLevel;
@@ -26,21 +26,9 @@ public class SoundManager : MonoBehaviour
     // Start is called before the first frame update
     private void Awake()
     {
-        alreadyPlayedWinSound   =   false;
-        currentLevel            =   SceneManager.GetActiveScene().buildIndex;
-        audioSource             =   GetComponent<AudioSource>();
-        numberOfLoots           =   FindObjectsOfType<Collectible>().Length;
-        player                  =   GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        player_mv               =   player.GetComponent<MovementController>();
-        rl                      =   GameObject.FindObjectOfType<RestartLevelByContact>();
-        player.pickupEvent      +=  PlayWinGameSound; // To chyba powinno być w updatejcie :O
+        LoadData();
+        LoadAction();
         audioSource.Play();
-    }
-
-    private void Start()
-    {
-        player_mv.jumped    += SoundJump;
-        rl.resetLevel       += RespawnSoundPlayer;
     }
 
     private void RespawnSoundPlayer()
@@ -63,5 +51,23 @@ public class SoundManager : MonoBehaviour
                 alreadyPlayedWinSound = true;
             }
         }
+    }
+
+    public void LoadData()
+    {
+        alreadyPlayedWinSound   = false;
+        currentLevel            = SceneManager.GetActiveScene().buildIndex;
+        audioSource             = GetComponent<AudioSource>();
+        numberOfLoots           = FindObjectsOfType<Collectible>().Length;
+        player                  = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        player_mv               = player.GetComponent<MovementController>();
+        rl                      = GameObject.FindObjectOfType<RestartLevelByContact>();
+    }
+
+    private void LoadAction()
+    {
+        player_mv.jumped    += SoundJump;
+        rl.resetLevel       += RespawnSoundPlayer;
+        player.pickupEvent  += PlayWinGameSound;
     }
 }

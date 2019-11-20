@@ -5,7 +5,7 @@ using UnityEngine;
 public class Collectible : MonoBehaviour
 {
     [SerializeField]
-    private  int         speed          = 10;
+    private int speed = 10;
 
     private void OnTriggerEnter(Collider collision)
     {
